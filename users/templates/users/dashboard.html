@@ -1,0 +1,17 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Health Checkup</title>
+    <link rel="stylesheet" href="/static/users/style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1>Dashboard</h1>
+        <p>Welcome back! Detect your emotions and get personalized health tips.</p>
+        <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+        <a href="/emotions/detect/" class="btn">Start Emotion Detection</a>
+    </div>
+</body>
+</html>

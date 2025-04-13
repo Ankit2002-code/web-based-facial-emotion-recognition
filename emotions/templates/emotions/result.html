@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Emotion Detection Result</title>
+    <link rel="stylesheet" href="/static/emotions/style.css">
+</head>
+<body>
+
+<h1>Emotion Detection Result</h1>
+
+{% if uploaded_image_url %}
+    <img src="{{ uploaded_image_url }}" alt="Detected Image" style="width: 300px; height: auto;">
+{% else %}
+    <p>No image uploaded.</p>
+{% endif %}
+
+<p><strong>Emotion:</strong> {{ emotion }}</p>
+<p><strong>Confidence Score:</strong> {{ confidence_score|floatformat:2 }}%</p>
+<p><strong>Health Tip:</strong> {{ health_tip }}</p>
+
+<a href="{% url 'emotion_detection' %}">Try Again</a>
+
+</body>
+</html>

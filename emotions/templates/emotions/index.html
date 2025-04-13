@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Detection</title>
+    <link rel="stylesheet" href="{% static 'emotions/style.css' %}">
+</head>
+<body>
+    <header class="page-header">
+        <div class="header-logo">
+            <img src="{% static 'emotions/college-logo.jpg' %}" alt="College Logo">
+        </div>
+        <h1 class="header-title">Emotion Detection</h1>
+    </header>
+    <div class="container">
+        <!-- Removed the duplicate h1 tag -->
+
+        <!-- Camera feed -->
+        <video id="camera-feed" autoplay playsinline></video>
+        <button onclick="startCamera()">Start Camera</button>
+        <button onclick="captureFrame()">Capture Image</button>
+
+        <!-- Image upload form -->
+        <form id="upload-form" method="POST" action="/emotions/upload_image/" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <label for="image">Upload Image:</label>
+            <input type="file" name="image" id="image" accept="image/*" required>
+        
+            <button type="submit">Upload Image</button>
+        </form>        
+
+        <!-- Results display -->
+        <div id="results" style="display:none;">
+            <h2>Results:</h2>
+            <img id="result-image" src="" alt="Detected Image" style="max-width: 100%; height: auto;">
+            <p><strong>Emotion:</strong> <span id="emotion"></span></p>
+            <p><strong>Confidence:</strong> <span id="confidence"></span></p>
+            <p><strong>Health Tip:</strong> <span id="health-tip"></span></p>
+        </div>
+    </div>
+
+    <script src="{% static 'emotions/script.js' %}"></script>
+</body>
+</html>

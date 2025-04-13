@@ -1,0 +1,269 @@
+/* Enhanced Emotion Detection Stylesheet */
+:root {
+    /* Color Palette */
+    --primary-color: #3498db;
+    --secondary-color: #2ecc71;
+    --accent-color: #9b59b6;
+    --background-color: #f0f4f8;
+    --text-color: #2c3e50;
+    --card-background: #f9fafc;  /* Changed from white to a subtle off-white */
+    --gradient-start: #6a11cb;
+    --gradient-end: #2575fc;
+    --soft-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background: linear-gradient(135deg, var(--background-color) 0%, rgba(37, 117, 252, 0.1) 100%);
+    color: var(--text-color);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    background: var(--card-background);
+    border-radius: 20px;
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.1), 
+        0 10px 20px rgba(0, 0, 0, 0.05);
+    width: 90%;
+    max-width: 380px;  /* Further reduced width */
+    padding: 30px;     /* Slightly reduced padding */
+    position: relative;
+    overflow: hidden;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    background-origin: border-box;
+    background-image: linear-gradient(to right, var(--card-background), var(--card-background)), 
+                      linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+    margin: 0 auto;    /* Center align */
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    position: relative;
+    background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    font-size: 1.8rem;  /* Slightly smaller heading */
+}
+
+h1::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;  /* Slightly shorter underline */
+    height: 3px;
+    background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+    border-radius: 2px;
+}
+
+/* Result Page Specific Styles */
+img {
+    max-width: 100%;
+    border-radius: 15px;
+    box-shadow: var(--soft-shadow);
+    margin: 20px 0;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+strong {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+p {
+    background: rgba(52, 152, 219, 0.05);
+    padding: 15px;
+    border-radius: 10px;
+    margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+p:nth-child(even) {
+    background: rgba(41, 128, 185, 0.05);
+}
+
+/* Try Again Link */
+a {
+    display: inline-block;
+    text-decoration: none;
+    background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+    color: white;
+    padding: 12px 24px;
+    border-radius: 10px;
+    margin-top: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: var(--soft-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+a:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Camera feed styles */
+#camera-feed {
+    width: 100%;
+    max-height: 250px;  /* Reduced height */
+    border-radius: 15px;
+    box-shadow: var(--soft-shadow);
+    margin-bottom: 20px;
+    object-fit: cover;
+}
+
+button {
+    background: linear-gradient(to right, var(--gradient-start), var(--gradient-end));
+    color: white;
+    border: none;
+    padding: 12px 20px;  /* Slightly reduced padding */
+    margin: 10px 0;      /* Change to vertical margin only */
+    width: 100%;         /* Make buttons full width */
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transform: perspective(500px) translateZ(0);
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    transform: perspective(500px) translateZ(20px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+#upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;  /* Reduced gap */
+    margin: 15px auto 0;  /* Center the form with auto margins */
+    width: 100%;  /* Full width within container */
+    text-align: center;
+}
+
+input[type="file"] {
+    border: 2px dashed var(--primary-color);
+    padding: 15px;
+    text-align: center;
+    border-radius: 15px;
+    background: rgba(52, 152, 219, 0.05);
+    transition: all 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+input[type="file"]:hover {
+    background: rgba(52, 152, 219, 0.1);
+}
+
+#results {
+    margin-top: 20px;
+    background: linear-gradient(
+        to right bottom, 
+        rgba(255, 255, 255, 0.8), 
+        rgba(255, 255, 255, 0.4)
+    );
+    border-radius: 15px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+    animation: slide-up 0.5s ease;
+}
+
+#result-image {
+    max-width: 100%;
+    border-radius: 15px;
+    box-shadow: var(--soft-shadow);
+    margin-bottom: 20px;
+}
+
+/* Animations */
+@keyframes slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .container {
+        width: 95%;
+        padding: 20px 15px;  /* Slightly less padding on mobile */
+    }
+
+    button, a {
+        padding: 10px 16px;
+        font-size: 0.9em;
+    }
+}
+
+/* LPU Logo Styles */
+.header-logo {
+    position: fixed;
+    left: 10px;  /* Small padding from edge */
+    top: 10px;
+    width: 180px;  /* Reduced logo size */
+    height: auto;
+    z-index: 1000;
+    margin: 0;
+    padding: 0;
+}
+
+.header-logo img {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: none;
+    object-fit: contain;
+}
+
+/* Header adjustments */
+.page-header {
+    width: 100%;
+    max-width: 380px;  /* Match container width */
+    margin: 0 auto 25px;
+    padding-top: 60px;  /* Space for fixed logo */
+}
+
+@media (max-width: 768px) {
+    .header-logo {
+        width: 150px;  /* Even smaller on mobile */
+    }
+    .page-header {
+        padding-top: 45px;
+    }
+}
