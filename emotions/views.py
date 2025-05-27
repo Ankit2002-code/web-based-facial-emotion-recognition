@@ -36,6 +36,7 @@ def upload_image(request):
         cv2.imwrite(image_path, img)
 
         result = EmotionResult.objects.create(
+            user=request.user,
             emotion=detected_emotion,
             confidence=confidence_score,
             health_tip=health_tip,
@@ -85,6 +86,7 @@ def start_camera(request):
 
         # ✅ Save result in the database
         result = EmotionResult.objects.create(
+            user=request.user,
             emotion=detected_emotion,
             confidence=confidence_score,
             health_tip=health_tip,

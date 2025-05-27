@@ -1,17 +1,2526 @@
-
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard - Health Checkup</title>
-    <link rel="stylesheet" href="/static/users/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Health Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --secondary-color: #10b981;
+            --secondary-light: #34d399;
+            --secondary-dark: #059669;
+            --accent-color: #f59e0b;
+            --dark-color: #1e293b;
+            --light-color: #f8fafc;
+            --gray-light: #e2e8f0;
+            --gray-medium: #94a3b8;
+            --danger-color: #ef4444;
+            --info-color: #0ea5e9;
+            --warning-color: #f59e0b;
+            --success-color: #10b981;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f1f5f9;
+            color: var(--dark-color);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Medical-themed background effects */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.05) 0%, transparent 20%),
+                linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(255,255,255,0.95));
+            z-index: -1;
+        }
+
+        /* Pulse animation for health elements */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* Emotion animations */
+        .happy-animation {
+            animation: bounce 1.5s infinite, float 3s ease-in-out infinite;
+        }
+
+        .sad-animation {
+            animation: shake 2s infinite;
+        }
+
+        .angry-animation {
+            animation: pulse 0.5s infinite;
+        }
+
+        .surprise-animation {
+            animation: tada 1.5s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        @keyframes tada {
+            0% { transform: scale(1); }
+            10%, 20% { transform: scale(0.9) rotate(-3deg); }
+            30%, 50%, 70%, 90% { transform: scale(1.1) rotate(3deg); }
+            40%, 60%, 80% { transform: scale(1.1) rotate(-3deg); }
+            100% { transform: scale(1) rotate(0); }
+        }
+
+        /* Scrollbar styles */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(241, 245, 249, 0.8);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--gray-medium);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-light);
+        }
+        
+        /* Layout */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar styles */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .sidebar-brand {
+            padding: 25px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .sidebar-brand h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sidebar-brand .logo-icon {
+            font-size: 1.8rem;
+            color: var(--accent-color);
+        }
+        
+        .sidebar-toggle {
+            background: transparent;
+            color: white;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: none;
+        }
+        
+        .user-profile {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-profile::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/medical-cross.png');
+            opacity: 0.05;
+            z-index: 0;
+        }
+        
+        .user-profile .avatar {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            padding: 3px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05));
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .user-profile .avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .user-profile .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        
+        .user-profile .avatar .status {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            border: 2px solid white;
+        }
+        
+        .user-profile h5 {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .user-profile p {
+            opacity: 0.7;
+            font-size: 0.85rem;
+            margin-bottom: 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .sidebar-menu {
+            padding: 20px 0;
+            position: relative;
+        }
+
+        .sidebar-menu::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/medical-cross.png');
+            opacity: 0.03;
+            z-index: 0;
+        }
+        
+        .menu-category {
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 15px 25px 10px;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .nav-item {
+            list-style: none;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 25px;
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.1), transparent);
+            transition: width 0.3s ease;
+            z-index: -1;
+        }
+        
+        .nav-link:hover {
+            color: white;
+        }
+        
+        .nav-link:hover::before {
+            width: 100%;
+        }
+        
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left: 3px solid var(--accent-color);
+            font-weight: 500;
+        }
+        
+        .nav-link i {
+            width: 20px;
+            margin-right: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .nav-link .badge {
+            margin-left: auto;
+            background-color: var(--accent-color);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 10px;
+        }
+        
+        /* Main content styles */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .main-content::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 280px;
+            width: calc(100% - 280px);
+            height: 100%;
+            background: 
+                url('https://www.transparenttextures.com/patterns/medical-cross.png') repeat,
+                linear-gradient(to bottom, rgba(255,255,255,0.95), rgba(255,255,255,0.98));
+            opacity: 0.03;
+            z-index: -1;
+        }
+        
+        .page-header {
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .page-header .title-section h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .page-header .title-section p {
+            color: var(--gray-medium);
+            margin: 0;
+        }
+        
+        .page-header .user-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            background: white;
+            color: var(--dark-color);
+            border: none;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+        
+        .btn-icon:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-icon .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            background-color: var(--danger-color);
+            color: white;
+            border-radius: 10px;
+        }
+        
+        .user-dropdown {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 8px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+        }
+        
+        .user-dropdown:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .user-dropdown img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .user-dropdown span {
+            font-weight: 500;
+        }
+        
+        .user-dropdown i {
+            color: var(--gray-medium);
+        }
+        
+        /* Card styles */
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            background: white;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/medical-cross.png');
+            opacity: 0.03;
+            z-index: 0;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+        
+        .card-header {
+            background: white;
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .card-header h5 {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-header h5 i {
+            color: var(--primary-color);
+        }
+        
+        .card-header .header-action {
+            color: var(--gray-medium);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .card-header .header-action:hover {
+            color: var(--primary-color);
+        }
+        
+        .card-body {
+            padding: 25px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Stat cards */
+        .stat-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            background: white;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/medical-cross.png');
+            opacity: 0.03;
+            z-index: 0;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            transition: all 0.3s;
+            z-index: 1;
+        }
+        
+        .stat-card.primary::before { background-color: var(--primary-color); }
+        .stat-card.success::before { background-color: var(--success-color); }
+        .stat-card.warning::before { background-color: var(--warning-color); }
+        .stat-card.danger::before { background-color: var(--danger-color); }
+        
+        .stat-card:hover::before {
+            width: 7px;
+        }
+        
+        .stat-card .stat-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-medium);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .stat-card .stat-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2.5rem;
+            opacity: 0.1;
+            color: var(--dark-color);
+            transition: all 0.3s;
+            z-index: 0;
+        }
+        
+        .stat-card:hover .stat-icon {
+            transform: translateY(-5px);
+            opacity: 0.2;
+        }
+        
+        .stat-card .trend {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .trend.up { color: var(--success-color); }
+        .trend.down { color: var(--danger-color); }
+        .trend.neutral { color: var(--gray-medium); }
+        
+        /* Health tip styles */
+        .health-tip {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
+            border-left: 5px solid var(--secondary-color);
+            padding: 20px 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.1);
+        }
+
+        .health-tip::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/medical-cross.png');
+            opacity: 0.05;
+            z-index: 0;
+        }
+        
+        .health-tip .tip-icon {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 8rem;
+            opacity: 0.05;
+            color: var(--secondary-color);
+            z-index: 0;
+        }
+        
+        .health-tip h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--secondary-dark);
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .health-tip h4 i {
+            color: var(--secondary-color);
+        }
+        
+        .health-tip p {
+            color: var(--dark-color);
+            font-size: 1rem;
+            margin: 0;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Emotion detection styles */
+        .detection-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+        
+        @media (max-width: 992px) {
+            .detection-area {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .video-container {
+            background-color: var(--dark-color);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 16/9;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        #canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 15px;
+        }
+        
+        .camera-controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/medical-cross.png');
+            opacity: 0.05;
+            z-index: -1;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary-color), var(--primary-dark));
+            color: white;
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
+        }
+        
+        .btn-primary:hover, .btn-primary:focus {
+            background: linear-gradient(to right, var(--primary-dark), var(--primary-color));
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f1f5f9;
+            color: var(--dark-color);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .btn-secondary:hover, .btn-secondary:focus {
+            background: #e2e8f0;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+        
+        .btn-success {
+            background: linear-gradient(to right, var(--secondary-color), var(--secondary-dark));
+            color: white;
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-success:hover, .btn-success:focus {
+            background: linear-gradient(to right, var(--secondary-dark), var(--secondary-color));
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+        
+        .upload-section {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(99, 102, 241, 0.02));
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            border: 1px dashed var(--primary-light);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .upload-section::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/medical-cross.png');
+            opacity: 0.03;
+            z-index: 0;
+        }
+        
+        .upload-section:hover {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(99, 102, 241, 0.04));
+        }
+        
+        .upload-section h5 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary-dark);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .custom-file-upload {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            border-radius: 10px;
+            background: white;
+            border: 1px solid var(--gray-light);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+            z-index: 1;
+        }
+        
+        .custom-file-upload input[type="file"] {
+            position: absolute;
+            font-size: 100px;
+            opacity: 0;
+            right: 0;
+            top: 0;
+            cursor: pointer;
+        }
+        
+        .file-upload-label {
+            flex-grow: 1;
+            padding: 10px 15px;
+            cursor: pointer;
+            color: var(--gray-medium);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .upload-btn {
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .upload-btn:hover {
+            background: var(--primary-dark);
+        }
+        
+        /* Detection results styles */
+        .detection-results {
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .results-header {
+            padding: 20px;
+            background: linear-gradient(to right, var(--primary-color), var(--primary-dark));
+            color: white;
+        }
+        
+        .results-header h5 {
+            margin: 0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .results-body {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .result-image-container {
+            position: relative;
+            aspect-ratio: 16/9;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        #result-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .emotion-result {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .emotion-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+        }
+        
+        .emotion-details {
+            flex-grow: 1;
+        }
+        
+        .emotion-details h6 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--dark-color);
+        }
+        
+        .confidence-bar {
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .confidence-level {
+            height: 100%;
+            background: linear-gradient(to right, var(--secondary-color), var(--secondary-light));
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+        
+        .detection-tip {
+            background: rgba(16, 185, 129, 0.05);
+            border-left: 3px solid var(--secondary-color);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .detection-tip h6 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--secondary-dark);
+        }
+        
+        .detection-tip p {
+            font-size: 0.9rem;
+            margin: 0;
+            color: var(--dark-color);
+        }
+        
+        /* Recommendations styles */
+        .rec-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .rec-item {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            border-top: 4px solid var(--secondary-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .rec-item::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/medical-cross.png');
+            opacity: 0.03;
+            z-index: 0;
+        }
+        
+        .rec-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+        
+        .rec-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--secondary-light), var(--secondary-color));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .rec-content h6 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--dark-color);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .rec-content p {
+            color: var(--gray-medium);
+            margin: 0;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Table styles */
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .table-container::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://www.transparenttextures.com/patterns/medical-cross.png');
+            opacity: 0.03;
+            z-index: 0;
+        }
+        
+        .table {
+            margin-bottom: 0;
+        }
+        
+        .table th {
+            background: #f8fafc;
+            padding: 15px 20px;
+            font-weight: 600;
+            color: var(--dark-color);
+            border-bottom: 2px solid #e2e8f0;
+            white-space: nowrap;
+        }
+        
+        .table td {
+            padding: 15px 20px;
+            vertical-align: middle;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: #f8fafc;
+        }
+        
+        .table .emotion-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+        
+        .progress {
+            height: 10px;
+            background-color: #e2e8f0;
+            border-radius: 5px;
+        }
+        
+        .progress-bar {
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+        
+        .btn-sm {
+            padding: 7px 15px;
+            font-size: 0.85rem;
+        }
+        
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            background: transparent;
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        /* Chart styles */
+        .chart-container {
+            height: 350px;
+            position: relative;
+        }
+        
+        /* Glass morphism elements */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Dark mode toggle */
+        .dark-mode-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
+            z-index: 1000;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dark-mode-toggle:hover {
+            transform: translateY(-5px) rotate(15deg);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        /* Emotion Detail Modal */
+        .emotion-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .emotion-modal-content {
+            background: white;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            position: relative;
+            animation: fadeInUp 0.4s;
+        }
+
+        .emotion-modal-header {
+            padding: 20px;
+            background: linear-gradient(to right, var(--primary-color), var(--primary-dark));
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .emotion-modal-header h5 {
+            margin: 0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .emotion-modal-body {
+            padding: 20px;
+        }
+
+        .emotion-modal-footer {
+            padding: 15px 20px;
+            background: #f8fafc;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .emotion-detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .emotion-detail-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .emotion-detail-label {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .emotion-detail-value {
+            color: var(--gray-medium);
+        }
+
+        .emotion-icon-large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 20px;
+        }
+
+        .happy-icon {
+            background: linear-gradient(135deg, #34d399, #10b981);
+            color: white;
+        }
+
+        .sad-icon {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            color: white;
+        }
+
+        .angry-icon {
+            background: linear-gradient(135deg, #f87171, #ef4444);
+            color: white;
+        }
+
+        .neutral-icon {
+            background: linear-gradient(135deg, #94a3b8, #64748b);
+            color: white;
+        }
+
+        .surprise-icon {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+        }
+
+        .fear-icon {
+            background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+            color: white;
+        }
+
+        .disgust-icon {
+            background: linear-gradient(135deg, #86efac, #4ade80);
+            color: white;
+        }
+
+        /* Timeline styles */
+        .timeline {
+            position: relative;
+            margin: 20px 0;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background: var(--gray-light);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .timeline-item::before {
+            content: "";
+            position: absolute;
+            left: -36px;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-date {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--gray-medium);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .timeline-content {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .timeline-content h6 {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--dark-color);
+        }
+
+        .timeline-content p {
+            margin: 0;
+            color: var(--gray-medium);
+            font-size: 0.9rem;
+        }
+
+        /* Emotion history card */
+        .emotion-history {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .emotion-record {
+            display: flex;
+            align-items: center;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+
+        .emotion-record:hover {
+            background: #f1f5f9;
+            transform: translateX(5px);
+        }
+
+        .emotion-date {
+            width: 100px;
+            text-align: center;
+            padding-right: 15px;
+            border-right: 1px solid var(--gray-light);
+        }
+
+        .emotion-date .day {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            line-height: 1;
+        }
+
+        .emotion-date .month {
+            font-size: 0.8rem;
+            color: var(--gray-medium);
+            text-transform: uppercase;
+        }
+
+        .emotion-info {
+            flex-grow: 1;
+            padding: 0 15px;
+        }
+
+        .emotion-info h6 {
+            font-weight: 600;
+            margin: 0;
+            color: var(--dark-color);
+        }
+
+        .emotion-info p {
+            font-size: 0.85rem;
+            color: var(--gray-medium);
+            margin: 0;
+        }
+
+        .emotion-record .badge {
+            border-radius: 20px;
+            padding: 5px 10px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-happy {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--secondary-dark);
+        }
+
+        .badge-sad {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+        }
+
+        .badge-neutral {
+            background-color: rgba(148, 163, 184, 0.1);
+            color: var(--gray-medium);
+        }
+
+        .badge-angry {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning-color);
+        }
+
+        /* Calendar widget */
+        .calendar-widget {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .calendar-header {
+            background: linear-gradient(to right, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calendar-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        .calendar-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .calendar-nav button {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .calendar-nav button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .calendar-body {
+            padding: 20px;
+        }
+
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: 600;
+            color: var(--gray-medium);
+            margin-bottom: 10px;
+        }
+
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .calendar-day:hover {
+            background: var(--gray-light);
+        }
+
+        .calendar-day.current-day {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+
+        .calendar-day.has-emotion::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--secondary-color);
+        }
+
+        /* Activity log styles */
+        .activity-log {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .icon-camera { background: linear-gradient(135deg, var(--primary-light), var(--primary-color)); }
+        .icon-emotion { background: linear-gradient(135deg, var(--secondary-light), var(--secondary-color)); }
+        .icon-analysis { background: linear-gradient(135deg, var(--accent-color), #ed8a19); }
+
+        .activity-content {
+            flex-grow: 1;
+        }
+
+        .activity-content h6 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--dark-color);
+        }
+
+        .activity-content p {
+            font-size: 0.85rem;
+            color: var(--gray-medium);
+            margin: 0;
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--gray-medium);
+            white-space: nowrap;
+        }
+
+        /* Footer styles */
+        .footer {
+            margin-top: 40px;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .footer p {
+            margin: 0;
+            color: var(--gray-medium);
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .footer a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 1200px) {
+            .stat-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+                overflow: visible;
+            }
+            
+            .sidebar-brand h2 span,
+            .user-profile h5,
+            .user-profile p,
+            .menu-category,
+            .nav-link span {
+                display: none;
+            }
+            
+            .user-profile .avatar {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .nav-link {
+                justify-content: center;
+                padding: 12px;
+            }
+            
+            .nav-link i {
+                margin-right: 0;
+            }
+            
+            .nav-link .badge {
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                margin-left: 0;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+            }
+            
+            .sidebar-toggle {
+                display: block;
+            }
+            
+            .health-tip h4 {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .stat-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .rec-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 1100;
+                width: 230px;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .sidebar-brand h2 span,
+            .user-profile h5,
+            .user-profile p,
+            .menu-category,
+            .nav-link span {
+                display: block;
+            }
+            
+            .user-profile .avatar {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .nav-link {
+                justify-content: flex-start;
+                padding: 12px 25px;
+            }
+            
+            .nav-link i {
+                margin-right: 15px;
+            }
+            
+            .nav-link .badge {
+                position: static;
+                margin-left: auto;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .mobile-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1050;
+                display: none;
+            }
+            
+            .mobile-overlay.active {
+                display: block;
+            }
+            
+            .page-header .user-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        /* Dark mode styles */
+        .dark-mode {
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+
+        .dark-mode::before {
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.05) 0%, transparent 20%),
+                linear-gradient(to bottom, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.95));
+        }
+
+        .dark-mode .card,
+        .dark-mode .stat-card,
+        .dark-mode .detection-results,
+        .dark-mode .calendar-widget,
+        .dark-mode .table-container,
+        .dark-mode .footer,
+        .dark-mode .results-body,
+        .dark-mode .timeline-content,
+        .dark-mode .rec-item {
+            background-color: #1e293b;
+            color: #e2e8f0;
+        }
+
+        .dark-mode .card-header {
+            background-color: #1e293b;
+            border-bottom-color: #334155;
+        }
+
+        .dark-mode .table th {
+            background-color: #334155;
+            color: #e2e8f0;
+            border-bottom-color: #475569;
+        }
+
+        .dark-mode .table td {
+            border-bottom-color: #334155;
+        }
+
+        .dark-mode .table-hover tbody tr:hover {
+            background-color: #334155;
+        }
+
+        .dark-mode .stat-card .stat-title,
+        .dark-mode .card-header .header-action {
+            color: #94a3b8;
+        }
+
+        .dark-mode .stat-card .stat-value,
+        .dark-mode .card-header h5,
+        .dark-mode .page-header .title-section h1 {
+            color: #f8fafc;
+        }
+
+        .dark-mode .page-header .title-section p,
+        .dark-mode .footer p,
+        .dark-mode .timeline-date,
+        .dark-mode .emotion-date .month,
+        .dark-mode .emotion-info p,
+        .dark-mode .activity-content p,
+        .dark-mode .activity-time {
+            color: #94a3b8;
+        }
+
+        .dark-mode .btn-secondary {
+            background: #334155;
+            color: #e2e8f0;
+        }
+
+        .dark-mode .emotion-record,
+        .dark-mode .detection-tip {
+            background-color: #334155;
+        }
+
+        .dark-mode .emotion-record:hover {
+            background-color: #475569;
+        }
+
+        .dark-mode .calendar-weekdays {
+            color: #94a3b8;
+        }
+
+        .dark-mode .calendar-day:hover {
+            background-color: #334155;
+        }
+
+        .dark-mode .progress {
+            background-color: #334155;
+        }
+
+        .dark-mode .health-tip {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(16, 185, 129, 0.02));
+            border-left-color: var(--secondary-color);
+        }
+
+        .dark-mode .confidence-bar {
+            background: #334155;
+        }
+
+        .dark-mode .upload-section {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.03), rgba(99, 102, 241, 0.01));
+            border-color: #475569;
+        }
+
+        .dark-mode .custom-file-upload {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        .dark-mode .file-upload-label {
+            color: #94a3b8;
+        }
+
+        /* Loading and animation styles */
+        .loading-spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Tooltip styles */
+        .tooltip-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .custom-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--dark-color);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 1000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .custom-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--dark-color) transparent transparent transparent;
+        }
+
+        .tooltip-wrapper:hover .custom-tooltip {
+            opacity: 1;
+            visibility: visible;
+            bottom: calc(100% + 10px);
+        }
+
+        /* Accessible focus styles */
+        :focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Print styles */
+        @media print {
+            .sidebar, .page-header .user-actions, .camera-controls, .dark-mode-toggle {
+                display: none !important;
+            }
+            
+            .main-content {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+            
+            .card, .stat-card {
+                break-inside: avoid;
+                box-shadow: none !important;
+                border: 1px solid #e2e8f0 !important;
+            }
+            
+            body {
+                background-color: white !important;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <h1>Dashboard</h1>
-        <p>Welcome back! Detect your emotions and get personalized health tips.</p>
-        <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
-        <a href="/emotions/detect/" class="btn">Start Emotion Detection</a>
+    <!-- Loading Spinner -->
+    <div id="loader" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000;">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
     </div>
+
+    <!-- Alerts Container -->
+    <div id="alerts-container" style="position: fixed; top: 20px; right: 20px; width: 300px; z-index: 1000;"></div>
+
+    <!-- Emotion Detail Modal -->
+    <div id="emotion-modal" class="emotion-modal">
+        <div class="emotion-modal-content">
+            <div class="emotion-modal-header">
+                <h5><i class="fas fa-info-circle me-2"></i>Emotion Details</h5>
+                <button id="close-modal" class="btn-icon" style="background: transparent; color: white;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="emotion-modal-body">
+                <div id="emotion-icon-large" class="emotion-icon-large happy-icon">
+                    <i class="fas fa-smile"></i>
+                </div>
+                <div class="emotion-detail-item">
+                    <span class="emotion-detail-label">Emotion:</span>
+                    <span id="modal-emotion" class="emotion-detail-value">Happy</span>
+                </div>
+                <div class="emotion-detail-item">
+                    <span class="emotion-detail-label">Date & Time:</span>
+                    <span id="modal-date" class="emotion-detail-value">May 15, 2023 14:30</span>
+                </div>
+                <div class="emotion-detail-item">
+                    <span class="emotion-detail-label">Confidence Score:</span>
+                    <span id="modal-confidence" class="emotion-detail-value">85%</span>
+                </div>
+                <div class="emotion-detail-item">
+                    <span class="emotion-detail-label">Health Tip:</span>
+                    <span id="modal-tip" class="emotion-detail-value">Keep up the good mood! Consider sharing your happiness with others.</span>
+                </div>
+            </div>
+            <div class="emotion-modal-footer">
+                <button id="close-modal-btn" class="btn btn-primary">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="user-profile">
+            <img src="https://ui-avatars.com/api/?name={{ request.user.username }}&background=random" alt="User Profile">
+            <h5>{{ request.user.username }}</h5>
+            <p class="text-muted">Member since {{ request.user.date_joined|date:"M Y" }}</p>
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="#">
+                    <i class="fas fa-fw fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'emotion_detection' %}">
+                    <i class="fas fa-fw fa-camera"></i>
+                    <span>Emotion Detection</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-fw fa-history"></i>
+                    <span>History</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-fw fa-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-fw fa-user"></i>
+                    <span>Profile</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'logout' %}">
+                    <i class="fas fa-fw fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Emotion Health Dashboard</h1>
+            <small class="text-muted">Last login: {{ request.user.last_login|date:"M d, Y H:i" }}</small>
+        </div>
+
+        <!-- Health Tip -->
+        <div class="health-tip">
+            <h4><i class="fas fa-lightbulb text-success"></i> Health Tip of the Day</h4>
+            <p class="mb-0">"{{ daily_tip }}"</p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card primary h-100">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col me-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Total Detections</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_sessions }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card success h-100">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col me-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Most Frequent Emotion</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ most_common_emotion }}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-smile-beam fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card warning h-100">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col me-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Average Confidence</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ avg_confidence }}%</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-percent fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card stat-card danger h-100">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col me-2">
+                                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                    Stress Level</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">Medium</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-heartbeat fa-2x text-gray-300 pulse"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emotion Detection Interface -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-camera me-2"></i>Emotion Detection
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="video-container mb-3">
+                            <video id="video" width="100%" autoplay playsinline style="display:none;"></video>
+                            <canvas id="canvas" class="img-fluid"></canvas>
+                        </div>
+                        <div class="text-center">
+                            <button id="start-btn" class="btn btn-primary me-2">
+                                <i class="fas fa-play"></i> Start Camera
+                            </button>
+                            <button id="stop-btn" class="btn btn-secondary me-2" disabled>
+                                <i class="fas fa-stop"></i> Stop Camera
+                            </button>
+                            <button id="capture-btn" class="btn btn-success" disabled>
+                                <i class="fas fa-camera"></i> Capture & Analyze
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div id="detection-results" style="display:none;">
+                            <h5>Detection Results</h5>
+                            <img id="result-image" src="" class="img-fluid rounded mb-3">
+                            <div class="result-item">
+                                <strong>Emotion:</strong> <span id="detected-emotion">N/A</span>
+                            </div>
+                            <div class="result-item mt-2">
+                                <strong>Confidence:</strong>
+                                <div class="progress mt-2">
+                                    <div id="detection-confidence" class="progress-bar" role="progressbar" style="width: 0%">0%</div>
+                                </div>
+                            </div>
+                            <div class="result-item mt-3">
+                                <strong>Health Tip:</strong>
+                                <p id="detection-tip" class="mt-1">N/A</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Image Upload Form -->
+                <div class="border-top pt-3 mt-4">
+                    <h5><i class="fas fa-upload me-2"></i>Or Upload Image</h5>
+                    <form id="upload-form" class="mt-3">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="file" class="form-control" id="image-upload" accept="image/*">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search"></i> Analyze
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-success">
+                    <i class="fas fa-heartbeat me-2"></i>Personal Health Recommendations
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex align-items-center">
+                        <i class="fas fa-medal text-success me-3 happy-animation"></i>
+                        <div>
+                            <h6 class="mb-1">Mindfulness Practice</h6>
+                            <small>Try meditating for 10 minutes daily to reduce stress</small>
+                        </div>
+                    </li>
+                    <li class="list-group-item d-flex align-items-center">
+                        <i class="fas fa-utensils text-success me-3"></i>
+                        <div>
+                            <h6 class="mb-1">Nutrition</h6>
+                            <small>Increase intake of omega-3 fatty acids for mood regulation</small>
+                        </div>
+                    </li>
+                    <li class="list-group-item d-flex align-items-center">
+                        <i class="fas fa-running text-success me-3"></i>
+                        <div>
+                            <h6 class="mb-1">Physical Activity</h6>
+                            <small>30 minutes of moderate exercise can boost your mood</small>
+                        </div>
+                    </li>
+                    <li class="list-group-item d-flex align-items-center">
+                        <i class="fas fa-moon text-success me-3"></i>
+                        <div>
+                            <h6 class="mb-1">Sleep Hygiene</h6>
+                            <small>Aim for 7-9 hours of quality sleep each night</small>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Emotion History -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-history me-2"></i>Your Emotion Detection History
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive detection-history">
+                    <table class="table table-bordered table-hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Emotion</th>
+                                <th>Confidence</th>
+                                <th>Health Tip</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in emotion_logs %}
+                            <tr>
+                                <td>{{ record.date|date:"M d, Y H:i" }}</td>
+                                <td>
+                                    <i class="fas 
+                                        {% if record.emotion == 'happy' %}fa-smile-beam text-success happy-animation
+                                        {% elif record.emotion == 'sad' %}fa-sad-tear text-info sad-animation
+                                        {% elif record.emotion == 'angry' %}fa-angry text-danger angry-animation
+                                        {% elif record.emotion == 'neutral' %}fa-meh text-secondary
+                                        {% elif record.emotion == 'surprise' %}fa-surprise text-warning surprise-animation
+                                        {% elif record.emotion == 'fear' %}fa-flushed text-dark
+                                        {% elif record.emotion == 'disgust' %}fa-grimace text-success
+                                        {% endif %} me-2"></i>
+                                    {{ record.emotion|title }}
+                                </td>
+                                <td>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar 
+                                            {% if record.confidence > 75 %}bg-success
+                                            {% elif record.confidence > 50 %}bg-info
+                                            {% elif record.confidence > 25 %}bg-warning
+                                            {% else %}bg-danger
+                                            {% endif %}" 
+                                            role="progressbar" style="width: {{ record.confidence }}%" 
+                                            aria-valuenow="{{ record.confidence }}" 
+                                            aria-valuemin="0" 
+                                            aria-valuemax="100">
+                                            {{ record.confidence }}%
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ record.health_tip|truncatechars:50 }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary view-details" 
+                                            data-emotion="{{ record.emotion }}"
+                                            data-date="{{ record.date|date:'M d, Y H:i' }}"
+                                            data-confidence="{{ record.confidence }}"
+                                            data-tip="{{ record.health_tip }}">
+                                        <i class="fas fa-info-circle"></i> Details
+                                    </button>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">No detection records found. Start using the system to see your history.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emotion Distribution -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-chart-pie me-2"></i>Your Emotion Distribution
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="emotion-chart" id="emotionChart">
+                    <canvas id="myPieChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dark Mode Toggle -->
+    <div class="dark-mode-toggle">
+        <i class="fas fa-moon"></i>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        // Sample data for the chart
+        const emotionData = {
+            labels: ['Happy', 'Sad', 'Angry', 'Neutral', 'Surprise', 'Fear', 'Disgust'],
+            datasets: [{
+                data: [25, 15, 10, 30, 5, 10, 5],
+                backgroundColor: [
+                    '#1cc88a',
+                    '#36b9cc',
+                    '#e74a3b',
+                    '#5a5c69',
+                    '#f6c23e',
+                    '#858796',
+                    '#4e73df'
+                ],
+                hoverBackgroundColor: [
+                    '#17a673',
+                    '#2c9faf',
+                    '#be2617',
+                    '#373840',
+                    '#dda20a',
+                    '#6b6d7d',
+                    '#2e59d9'
+                ],
+                hoverBorderColor: "rgba(234, 236, 244, 1)",
+            }]
+        };
+
+        // Render the pie chart
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('myPieChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: emotionData,
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        tooltip: {
+                            backgroundColor: "rgb(255,255,255)",
+                            bodyColor: "#858796",
+                            borderColor: '#dddfeb',
+                            borderWidth: 1,
+                            padding: 15,
+                            displayColors: true,
+                            caretPadding: 10,
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${percentage}% (${value} detections)`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '70%',
+                }
+            });
+
+            // Dark mode toggle
+            const darkModeToggle = document.querySelector('.dark-mode-toggle');
+            darkModeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                
+                // Change icon based on mode
+                const icon = this.querySelector('i');
+                if (document.body.classList.contains('dark-mode')) {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                } else {
+                    icon.classList.remove('fa-sun');
+                    icon.classList.add('fa-moon');
+                }
+            });
+
+            // Emotion detail modal
+            const modal = document.getElementById('emotion-modal');
+            const closeModal = document.getElementById('close-modal');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const viewDetailsButtons = document.querySelectorAll('.view-details');
+
+            viewDetailsButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const emotion = this.getAttribute('data-emotion');
+                    const date = this.getAttribute('data-date');
+                    const confidence = this.getAttribute('data-confidence');
+                    const tip = this.getAttribute('data-tip');
+                    
+                    // Set modal content
+                    document.getElementById('modal-emotion').textContent = emotion.charAt(0).toUpperCase() + emotion.slice(1);
+                    document.getElementById('modal-date').textContent = date;
+                    document.getElementById('modal-confidence').textContent = confidence + '%';
+                    document.getElementById('modal-tip').textContent = tip;
+                    
+                    // Set icon based on emotion
+                    const iconLarge = document.getElementById('emotion-icon-large');
+                    const icon = iconLarge.querySelector('i');
+                    
+                    // Reset classes
+                    iconLarge.className = 'emotion-icon-large';
+                    icon.className = 'fas';
+                    
+                    // Set appropriate classes
+                    if (emotion === 'happy') {
+                        iconLarge.classList.add('happy-icon');
+                        icon.classList.add('fa-smile');
+                    } else if (emotion === 'sad') {
+                        iconLarge.classList.add('sad-icon');
+                        icon.classList.add('fa-sad-tear');
+                    } else if (emotion === 'angry') {
+                        iconLarge.classList.add('angry-icon');
+                        icon.classList.add('fa-angry');
+                    } else if (emotion === 'neutral') {
+                        iconLarge.classList.add('neutral-icon');
+                        icon.classList.add('fa-meh');
+                    } else if (emotion === 'surprise') {
+                        iconLarge.classList.add('surprise-icon');
+                        icon.classList.add('fa-surprise');
+                    } else if (emotion === 'fear') {
+                        iconLarge.classList.add('fear-icon');
+                        icon.classList.add('fa-flushed');
+                    } else if (emotion === 'disgust') {
+                        iconLarge.classList.add('disgust-icon');
+                        icon.classList.add('fa-grimace');
+                    }
+                    
+                    // Show modal
+                    modal.style.display = 'flex';
+                });
+            });
+
+            closeModal.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+
+            closeModalBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+
+            // Close modal when clicking outside
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+    
+    <!-- Camera and Emotion Detection Script -->
+    <script src="{% static 'emotions/js/camera.js' %}"></script>
 </body>
 </html>
