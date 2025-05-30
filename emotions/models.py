@@ -8,7 +8,10 @@ class EmotionResult(models.Model):
     confidence = models.FloatField()
     health_tip = models.TextField()
     image = models.ImageField(upload_to='uploads/')   # Ensure this uses MEDIA_ROOT
-    detected_at = models.DateTimeField(default=now)
+    detected_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username}: {self.emotion} - {self.detected_at}"
+        return f"{self.user.username} - {self.emotion} ({self.confidence*100:.1f}%)"
+
+    def confidence_percentage(self):
+        return round(self.confidence * 100, 1)

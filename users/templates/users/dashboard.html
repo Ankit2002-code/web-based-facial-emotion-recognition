@@ -2292,7 +2292,7 @@
                         <tbody>
                             {% for record in emotion_logs %}
                             <tr>
-                                <td>{{ record.date|date:"M d, Y H:i" }}</td>
+                                <td>{{ record.detected_at|date:"M d, Y H:i" }}</td>
                                 <td>
                                     <i class="fas 
                                         {% if record.emotion == 'happy' %}fa-smile-beam text-success happy-animation
@@ -2325,7 +2325,7 @@
                                 <td>
                                     <button class="btn btn-sm btn-outline-primary view-details" 
                                             data-emotion="{{ record.emotion }}"
-                                            data-date="{{ record.date|date:'M d, Y H:i' }}"
+                                            data-date="{{ record.detected_at|date:'M d, Y H:i' }}"
                                             data-confidence="{{ record.confidence }}"
                                             data-tip="{{ record.health_tip }}">
                                         <i class="fas fa-info-circle"></i> Details
