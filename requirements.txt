@@ -1,5 +1,5 @@
 Django>=4.1,<5.0
-tensorflow>=2.12,<2.14
+tensorflow=2.15.0
 opencv-python==4.5.5.64
 gunicorn==20.1.0
 deepface==0.0.93
